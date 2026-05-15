@@ -947,11 +947,11 @@ html, body {
       <div class="progress-bar" id="progressBar"></div>
     </div>
     <div class="topbar-row">
-      <button class="btn-back" id="backBtn" disabled>
+      <button class="btn-back" id="backBtn">
         <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="15 18 9 12 15 6"/>
         </svg>
-        Back
+        <span class="back-label">Back</span>
       </button>
       <span id="counter">1 / 8</span>
     </div>
@@ -1330,8 +1330,12 @@ function showQuestion(idx) {
   $progressBar.style.width = percent + '%';
   $counter.textContent = `${idx + 1} / ${questions.length}`;
   
-  // Back button
-  $backBtn.disabled = idx === 0;
+  // Back button — always enabled (첫 페이지에서는 홈으로)
+  $backBtn.disabled = false;
+  const backLabel = $backBtn.querySelector('.back-label');
+  if (backLabel) {
+    backLabel.textContent = idx === 0 ? 'Home' : 'Back';
+  }
   
   // Next button label
   $nextBtn.firstChild.textContent = idx === questions.length - 1 ? '제출하기 ' : '다음 ';
@@ -1393,7 +1397,11 @@ function goNext() {
 }
 
 function goBack() {
-  if (state.current === 0) return;
+  if (state.current === 0) {
+    // 첫 질문에서 뒤로 가면 히어로 화면으로 돌아가기
+    $formScreen.classList.remove('active');
+    return;
+  }
   state.current--;
   showQuestion(state.current);
 }
